@@ -12,4 +12,4 @@ sudo make install
 g++ -std=c++11 -o test.elf program.cpp -ltcpserver
 ```
 
-# A example program may be found in the `examples` directory under the `lib` directory.
+### A example program may be found in the `examples` directory under the `lib` directory.
