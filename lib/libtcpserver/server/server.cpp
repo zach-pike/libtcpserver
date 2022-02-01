@@ -1,6 +1,6 @@
-#include <libtcpserver/server/server.h>
+#include "server/server.h"
 
-#include <libtcpserver/socket/socket.h>
+#include "socket/socket.h"
 
 // Socket server constructor
 socket_server::socket_server(int port) {
@@ -48,10 +48,9 @@ void socket_server::stop() {
     // Close the socket
     close(server_fd);
 
-    // Stop all the clients
-    for (auto& client : clients) {
-        client->stop();
-    }
+    clients_mutex.lock();
+    clients.clear();
+    clients_mutex.unlock();
 }
 
 // Accept new connections to the connection pool
@@ -65,24 +64,45 @@ bool socket_server::accept_connections() {
     if (client_fd == -1) return false;
 
     // Add the client to the connection pool
-    auto object = std::make_unique<socket_client>(client_fd, client_address, this);
-    clients.push_back(std::move(object));
+    auto object = std::make_shared<socket_client>(client_fd, client_address, this);
+
+    clients_mutex.lock();
+
+    clients.push_back(object);
+
+    clients_mutex.unlock();
 
     return true;
 }
 
 // Get a client from the connection pool
-socket_client& socket_server::get_client(int index) {
+const socket_client& socket_server::get_client(int index) {
     return *clients[index];
 }
 
 // Get the number of clients in the connection pool
 int socket_server::get_client_count() const {
-    return clients.size();
+    clients_mutex.lock();
+
+    size_t size = clients.size();
+
+    return size;
 }
 
 // Close a client connection
 void socket_server::close_client(int index) {
-    clients[index]->stop();
+    clients_mutex.lock();
     clients.erase(clients.begin() + index);
+    clients_mutex.unlock();
+}
+
+// Loop over all the clients in the connection pool
+void socket_server::loop_over_clients(std::function<void(socket_client&)> callback) {
+    clients_mutex.lock();
+
+    for (auto& client : clients) {
+        callback(*client);
+    }
+
+    clients_mutex.unlock();
 }

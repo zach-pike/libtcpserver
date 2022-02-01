@@ -1,6 +1,6 @@
-#include <libtcpserver/socket/socket.h>
+#include "socket/socket.h"
 
-#include <libtcpserver/server/server.h>
+#include "server/server.h"
 
 // Socket client constructor
 socket_client::socket_client(int client_fd, sockaddr_in client_address, socket_server* server):

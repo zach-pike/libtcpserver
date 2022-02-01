@@ -8,20 +8,21 @@
 #include <vector>
 #include <thread>
 #include <memory>
+#include <mutex>
+#include <functional>
 
 #include <libtcpserver/socket/socket.h>
 
 
 class socket_server {
     private:
-        std::vector<std::unique_ptr<socket_client>> clients;
+        std::vector<std::shared_ptr<socket_client>> clients;
+        mutable std::mutex clients_mutex;
 
         int server_fd;
         sockaddr_in server_address;
 
         int port;
-
-        void handle_new_connection(int client_fd, sockaddr_in client_address);
     public:
         socket_server(int port);
         ~socket_server();
@@ -36,7 +37,9 @@ class socket_server {
         bool accept_connections();
 
         // Get a specific client
-        socket_client& get_client(int index);
+        const socket_client& get_client(int index);
+
+        void loop_over_clients(std::function<void(socket_client&)> callback);
 
         // Get the number of clients
         int get_client_count() const;

@@ -1,6 +1,6 @@
 OBJECTS = $(patsubst %.cpp,%.o, $(shell find lib/libtcpserver/ -name *.cpp))
 CC = g++
-CFLAGS = -I./lib/ -fPIC -c
+CFLAGS = -I./lib/ -I./lib/libtcpserver -fPIC -g -c
 LDFLAGS =
 OUT_FILE = libtcpserver.so
 

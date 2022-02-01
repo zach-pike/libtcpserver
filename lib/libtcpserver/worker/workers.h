@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <atomic>
+#include <mutex>
 
 // Don't you love dealing with circular includes?
 class socket_server;
@@ -16,10 +17,11 @@ class socket_worker {
 
         std::atomic_bool running;
 
-        static void worker_function(socket_worker* self, socket_client* socket, socket_server* server);
+        static void worker_function(socket_client* socket, socket_server* server, std::atomic_bool* running);
 
     public:
         socket_worker(socket_client* socket, socket_server* server);
+        ~socket_worker();
 
         void run();
         void stop();
