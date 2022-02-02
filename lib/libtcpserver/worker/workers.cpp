@@ -18,7 +18,6 @@ socket_worker::~socket_worker() {
 
 // Socket worker run function
 void socket_worker::run() {
-
     if (this->running == true) return;
     this->running = true;
 
@@ -50,6 +49,8 @@ void socket_worker::worker_function(socket_client* socket, socket_server* server
 
             socket->get_buffer().insert(socket->get_buffer().end(), new_vector.begin(), new_vector.end());
         }
+
+        delete [] temp_buffer;
 
         // Sleep for a bit
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
