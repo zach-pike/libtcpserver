@@ -106,3 +106,21 @@ void socket_server::loop_over_clients(std::function<void(socket_client&)> callba
 
     clients_mutex.unlock();
 }
+
+// Close a client connection via fd
+void socket_server::close_client_by_fd(int fd) {
+    clients_mutex.lock();
+
+    int index = 0;
+
+    for (auto& client : clients) {
+        if (client->get_client_fd() == fd) {
+            close_client(index);
+            break;
+        }
+
+        index++;
+    }
+
+    clients_mutex.unlock();
+}

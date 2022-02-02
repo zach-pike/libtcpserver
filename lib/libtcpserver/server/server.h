@@ -46,4 +46,7 @@ class socket_server {
 
         // Close client connection
         void close_client(int index);
+
+        // Close client via fd
+        void close_client_by_fd(int fd);
 };
